@@ -1,7 +1,8 @@
 const configuredApiUrl = import.meta.env.VITE_API_URL?.trim() || 'http://localhost:5000';
+const apiHostname = configuredApiUrl.replace(/\/+$/, '');
 const API_URL = /^https?:\/\//i.test(configuredApiUrl)
-  ? configuredApiUrl.replace(/\/+$/, '')
-  : `https://${configuredApiUrl.replace(/\/+$/, '')}`;
+  ? apiHostname
+  : `https://${apiHostname.includes('.') ? apiHostname : `${apiHostname}.onrender.com`}`;
 
 async function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
   const headers = new Headers(init.headers);
