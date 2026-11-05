@@ -1,4 +1,7 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const configuredApiUrl = import.meta.env.VITE_API_URL?.trim() || 'http://localhost:5000';
+const API_URL = /^https?:\/\//i.test(configuredApiUrl)
+  ? configuredApiUrl.replace(/\/+$/, '')
+  : `https://${configuredApiUrl.replace(/\/+$/, '')}`;
 
 async function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
   const headers = new Headers(init.headers);

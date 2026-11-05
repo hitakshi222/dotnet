@@ -1,0 +1,54 @@
+databases:
+  - name: campusdesk-db
+    databaseName: campusdesk
+    user: campusdesk
+    plan: free
+    region: oregon
+
+services:
+  - type: web
+    name: campusdesk-api
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: campusdesk-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: campusdesk-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: campusdesk-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: campusdesk-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: campusdesk-db
+          property: password
+      - key: DB_SSL_MODE
+        value: require
+
+  - type: web
+    name: campusdesk-frontend
+    runtime: static
+    region: oregon
+    branch: main
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: campusdesk-api
+          property: host
